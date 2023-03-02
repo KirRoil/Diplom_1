@@ -1,5 +1,6 @@
 package praktikum;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,4 +37,15 @@ public class IngredientTest {
         assertEquals(actual, price, 0);
     }
 
+    @Test
+    public void isSauceIngredientType() {
+        Assert.assertEquals(IngredientType.SAUCE, IngredientType.valueOf("SAUCE"));
+    }
+
+    @Test
+    public void isFillingIngredientType() {
+        Assert.assertEquals(IngredientType.FILLING, IngredientType.valueOf("FILLING"));
+    }
 }
+
+

@@ -16,8 +16,9 @@ public class BurgerTest {
 
     @Mock
     Bun bun;
-
+    @Mock
     Burger burger;
+    @Mock
     Ingredient randomIngredient;
 
     float bunPrice = 100f;

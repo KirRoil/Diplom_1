@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 
 public class BunTest {
-    CreateRandomBun randomBun = new CreateRandomBun();
+    private CreateRandomBun randomBun = new CreateRandomBun();
     Bun bun;
 
     String bunName = randomBun.getRandomBun().getName();
