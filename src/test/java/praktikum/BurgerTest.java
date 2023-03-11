@@ -10,6 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.*;
 
 import static org.junit.Assert.*;
+import static praktikum.IngredientType.FILLING;
+import static praktikum.IngredientType.SAUCE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BurgerTest {
@@ -20,6 +22,8 @@ public class BurgerTest {
     Burger burger;
     @Mock
     Ingredient randomIngredient;
+    @Mock
+    CreateRandomBun createRandomBun;
 
     float bunPrice = 100f;
     float ingredientPrice;
@@ -29,7 +33,8 @@ public class BurgerTest {
     public void setUpTest() {
         burger = new Burger();
         burger.setBuns(bun);
-        randomIngredient = new CreateRandomIngredient().getIngredients();
+        randomIngredient = Mockito.mock(Ingredient.class);
+        Mockito.when(randomIngredient.getPrice()).thenReturn(300f);
         ingredientPrice = randomIngredient.getPrice();
         expectedPrice = (bunPrice * 2) + ingredientPrice;
     }
@@ -53,11 +58,12 @@ public class BurgerTest {
         assertFalse(burger.ingredients.contains(randomIngredient));
     }
 
+
     @Test
     public void moveIngredientTest() {
         List<Ingredient> ingredientsList = new ArrayList<>();
         while (burger.ingredients.size() <= 5) {
-            randomIngredient = new CreateRandomIngredient().getIngredients();
+            randomIngredient = Mockito.mock(Ingredient.class);
             burger.ingredients.add(randomIngredient);
             ingredientsList.add(randomIngredient);
         }
@@ -75,20 +81,38 @@ public class BurgerTest {
 
     @Test
     public void getReceiptTest() {
-        CreateRandomBun randomBun = new CreateRandomBun();
-        String bunName = randomBun.getRandomBun().getName();
-        Mockito.when(bun.getName()).thenReturn(bunName);
-        Mockito.when(bun.getPrice()).thenReturn(bunPrice);
-        burger.setBuns(bun);
-        burger.addIngredient(new Ingredient(IngredientType.SAUCE, "hot sauce", 100f));
-        burger.addIngredient(new Ingredient(IngredientType.SAUCE, "chili sauce", 300f));
-        burger.addIngredient(new Ingredient(IngredientType.FILLING, "dinosaur", 200f));
-        String expectedReceipt = String.format(("(==== %s ====)%n"), bun.getName()) +
+        CreateRandomBun randomBun = Mockito.mock(CreateRandomBun.class);
+        Bun mockBun = Mockito.mock(Bun.class);
+        String bunName = "Bun name";
+        Mockito.when(mockBun.getName()).thenReturn(bunName);
+        Mockito.when(mockBun.getPrice()).thenReturn(bunPrice);
+        List<Ingredient> ingredients = new ArrayList<>();
+        Ingredient sauce1 = Mockito.mock(Ingredient.class);
+        Mockito.when(sauce1.getName()).thenReturn("hot sauce");
+        Mockito.when(sauce1.getPrice()).thenReturn(100f);
+        Mockito.when(sauce1.getType()).thenReturn(SAUCE);
+        Ingredient sauce2 = Mockito.mock(Ingredient.class);
+        Mockito.when(sauce2.getName()).thenReturn("chili sauce");
+        Mockito.when(sauce2.getPrice()).thenReturn(300f);
+        Mockito.when(sauce2.getType()).thenReturn(SAUCE);
+        Ingredient filling = Mockito.mock(Ingredient.class);
+        Mockito.when(filling.getName()).thenReturn("dinosaur");
+        Mockito.when(filling.getPrice()).thenReturn(200f);
+        Mockito.when(filling.getType()).thenReturn(FILLING);
+        ingredients.add(sauce1);
+        ingredients.add(sauce2);
+        ingredients.add(filling);
+        Burger burger = new Burger();
+        burger.setBuns(mockBun);
+        for (Ingredient ingredient : ingredients) {
+            burger.addIngredient(ingredient);
+        }
+        String expectedReceipt = String.format(("(==== %s ====)%n"), bunName) +
                 "= sauce hot sauce =\r\n" +
                 "= sauce chili sauce =\r\n" +
                 "= filling dinosaur =" +
-                String.format("%n(==== %s ====)%n", bun.getName()) +
-                String.format("%nPrice: 800,000000%n");
+                String.format("%n(==== %s ====)%n", bunName) +
+                String.format("%nPrice: 800,000000%n", expectedPrice);
         assertEquals(expectedReceipt, burger.getReceipt());
     }
 }
